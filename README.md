@@ -1,11 +1,13 @@
 # Create a Kubernetes cluster with Kubespray
 
+The `kubespray` pack is located here: https://github.com/kubernetes-sigs/kubespray
+
 ## Prerequisites
 
 You need to have installed on the host machine few packages that are available via Python-pip. The following command runs in kubespray directory:
 
 ```shell
-pip install -r requirements.txt
+pip install -r src/requirements.txt
 ```
 
 ## Configuration
