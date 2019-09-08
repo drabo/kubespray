@@ -2,9 +2,9 @@
 
 The `kubespray` pack is located here: https://github.com/kubernetes-sigs/kubespray
 
-You should clone it. I cloned it and renamed it to `src`. If I mention a file then it is within the directory containing `kubespray` package.
+You should clone it. All below mentions to files within the directory containing `kubespray` package. I cloned it and renamed it to `src`.
 
-First thing to do is to move to the kubespray pack directory and then follow the below guide:
+So first thing to do is to move to kubespray directory and then follow the below instructions:
 
 ```shell
 cd src
@@ -272,6 +272,38 @@ Edit the DaemonSet `ingress-nginx-controller` and add the following argument to 
 
 This option will help to display for each ingress the IP address of the endpoint.
 
+### Remove proxy
+
+If you specified the http_proxy and https_proxy but you want to modify, you need to:
+
+- login to each cluster node, either master or worker node
+- edit the file `/etc/systemd/system/docker.service.d/http-proxy.conf`
+- restart docker service
+
+If you want to remove the proxy configuration then you should delete the above mentioned file on each cluster node.
+
+## Cluster operations
+
+### Adding nodes
+
+If new nodes are needed in the cluster then you should create them with same OS as the existin cluster nodes. It would be wise to have the same OS on all cluster nodes.
+
+Update the inventory file `inventory/mycluster/inventory.ini` and include the new node in all relevant groups: all, kube-master, etcd, kube-node.
+
+Ensure that you have connectivity to new cluster nodes for Ansible and run:
+
+```shell
+ansible-playbook -i inventory/mycluster/inventory.ini scale.yml
+```
+
+### Remove nodes
+
+Update the inventory file `inventory/mycluster/inventory.ini` and comment or delete the nodes from all relevant groups: all, kube-master, etcd, kube-node.
+
+```shell
+ansible-playbook -i inventory/mycluster/inventory.ini remove-node.yml -e "node=nodeX,nodeY"
+```
+
 ## Troubleshooting
 
 ### Installation stuck during container image download
@@ -283,13 +315,3 @@ If you connect with vagrant user then apply the following, otherwise change the 
 ```shell
 sudo usermod -aG docker vagrant
 ```
-
-### Remove proxy
-
-If you specified the http_proxy and https_proxy but you want to modify, you need to:
-
-- login to each cluster node, either master or worker node
-- edit the file `/etc/systemd/system/docker.service.d/http-proxy.conf`
-- restart docker service
-
-If you want to remove the proxy configuration then you should delete the above mentioned file on each cluster node.
