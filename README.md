@@ -2,19 +2,27 @@
 
 The `kubespray` pack is located here: https://github.com/kubernetes-sigs/kubespray
 
+You should clone it. All below mentions to files within the directory containing `kubespray` package. I cloned it and renamed it to `src`.
+
+So first thing to do is to move to kubespray directory and then follow the below instructions:
+
+```shell
+cd src
+```
+
 ## Prerequisites
 
 You need to have installed on the host machine few packages that are available via Python-pip. The following command runs in kubespray directory:
 
 ```shell
-pip install -r src/requirements.txt
+pip install -r requirements.txt
 ```
 
 ## Configuration
 
 ### Modify ansible.cfg
 
-File location: `src/ansible.cfg`
+File location: `ansible.cfg`
 
 Add/modify following:
 
@@ -36,9 +44,16 @@ become_user=root
 become_ask_pass=False
 ```
 
+If you work on Windows and use Cygwin as shell interface then you should modify in ansible.cfg by commenting the current ssh_args and replacing it as below:
+
+```init
+#ssh_args = -o ControlMaster=auto -o ControlPersist=30m -o ConnectionAttempts=100 -o UserKnownHostsFile=/dev/null
+ssh_args = -C -o ControlMaster=no
+```
+
 ### Modify Vagrantfile
 
-File location: `src/Vagrantfile`
+File location: `Vagrantfile`
 
 In order to generate in Virtualbox the cluster you need to update few parameters:
 
@@ -62,7 +77,13 @@ $os = "ubuntu1604"
 
 ### Modify inventory.ini
 
-File location: `src/inventory/sample/inventory.ini`
+You should make a copy of the `sample` directory and make your changes in your copy.
+
+```shell
+cp -r inventory/sample inventory/mycluster
+```
+
+File location: `inventory/mycluster/inventory.ini`
 
 In order to specify the role of each node you need to modify several sections:
 
@@ -123,7 +144,7 @@ Another cluster architecture may be with 5 nodes:
 
 ### Proxy
 
-File location: `src/inventory/sample/group_vars/all/all.yml`
+File location: `inventory/mycluster/group_vars/all/all.yml`
 
 If you run the cluster behind a proxy then you must specify this. You may need to modify the following assuming your proxy is `http://192.168.56.200:3128`:
 
@@ -136,7 +157,7 @@ You may also need to change the `no_proxy` parameter.
 
 ### Enable several useful addons in your cluster
 
-File location: `src/inventory/sample/group_vars/k8s-cluster/addons.yml`
+File location: `inventory/mycluster/group_vars/k8s-cluster/addons.yml`
 
 #### Enable Kubernetes Dashboard
 
@@ -164,7 +185,7 @@ metrics_server_enabled: true
 
 ### Set various parameters for your cluster
 
-File location: `src/inventory/sample/group_vars/k8s-cluster/k8s-cluster.yml`
+File location: `inventory/mycluster/group_vars/k8s-cluster/k8s-cluster.yml`
 
 #### Choose the network plugin
 
@@ -176,7 +197,7 @@ kube_network_plugin: calico
 
 According to the network plugin chosenyou may want to update specific parameters in the corresponding config file.
 
-For `calico` you need to modify the file `src/inventory/sample/group_vars/k8s-cluster/k8s-net-calico.yml`
+For `calico` you need to modify the file `inventory/mycluster/group_vars/k8s-cluster/k8s-net-calico.yml`
 
 #### Choose the cluster name
 
@@ -224,7 +245,7 @@ This option assumes:
 In this case you run the following command that will install the Kubernets components:
 
 ```shell
-ansible-playbook -i inventory/sample/inventory.ini cluster.yml
+ansible-playbook -i inventory/mycluster/inventory.ini cluster.yml
 ```
 
 ## Additional configuration
