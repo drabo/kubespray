@@ -2,9 +2,9 @@
 
 The `kubespray` pack is located here: https://github.com/kubernetes-sigs/kubespray
 
-You should clone it. All below mentions to files within the directory containing `kubespray` package. I cloned it and renamed it to `src`.
+You should clone it. I cloned it and renamed it to `src`. If I mention a file then it is within the directory containing `kubespray` package.
 
-So first thing to do is to move to kubespray directory and then follow the below instructions:
+First thing to do is to move to the kubespray pack directory and then follow the below guide:
 
 ```shell
 cd src
