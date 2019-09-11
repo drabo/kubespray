@@ -279,8 +279,9 @@ If you specified the http_proxy and https_proxy but you want to modify, you need
 - login to each cluster node, either master or worker node
 - edit the file `/etc/systemd/system/docker.service.d/http-proxy.conf`
 - restart docker service
+- edit the file `/etc/apt/apt.conf`
 
-If you want to remove the proxy configuration then you should delete the above mentioned file on each cluster node.
+If you want to remove the proxy configuration then you should delete the above mentioned files on each cluster node.
 
 ## Cluster operations
 
