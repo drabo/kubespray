@@ -195,7 +195,7 @@ You may choose between several plugins like: calico, flannel and few other. The 
 kube_network_plugin: calico
 ```
 
-According to the network plugin chosenyou may want to update specific parameters in the corresponding config file.
+According to the network plugin chosen, you may want to update specific parameters in the corresponding config file. The default works fine.
 
 For `calico` you need to modify the file `inventory/mycluster/group_vars/k8s-cluster/k8s-net-calico.yml`
 
@@ -299,11 +299,15 @@ ansible-playbook -i inventory/mycluster/inventory.ini scale.yml
 
 ### Remove nodes
 
-Update the inventory file `inventory/mycluster/inventory.ini` and comment or delete the nodes from all relevant groups: all, kube-master, etcd, kube-node.
+In order to remove `nodeX` and `nodeY` from the cluster run:
 
 ```shell
 ansible-playbook -i inventory/mycluster/inventory.ini remove-node.yml -e "node=nodeX,nodeY"
 ```
+
+If a node is not reachable by ssh, add `-e "reset_nodes=no"`.
+
+You may need to update the inventory file `inventory/mycluster/inventory.ini` and comment or delete the removed nodes from all relevant groups: all, kube-master, etcd, kube-node.
 
 ## Troubleshooting
 
