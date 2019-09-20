@@ -320,3 +320,11 @@ If you connect with vagrant user then apply the following, otherwise change the 
 ```shell
 sudo usermod -aG docker vagrant
 ```
+
+### How to get the token for dashboard
+
+Identify the secret `kubernetes-dashboard-token` and get the value that will be used in browser:
+
+```shell
+kubectl -n kube-system describe secrets $(kubectl -n kube-system get secrets|grep kubernetes-dashboard-token|awk '{print $1}')|grep ^token:|awk '{print $2}'
+```
