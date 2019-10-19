@@ -212,8 +212,8 @@ cluster_name: cluster.local
 This subnets *must be unused* in your network.
 
 ```yaml
-kube_service_addresses: 10.233.0.0/18
-kube_pods_subnet: 10.233.64.0/18
+kube_service_addresses: 100.64.0.0/18
+kube_pods_subnet: 100.64.64.0/18
 ```
 
 ## Create cluster
