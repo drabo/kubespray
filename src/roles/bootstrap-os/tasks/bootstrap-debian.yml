@@ -75,7 +75,7 @@
 
 # Workaround for https://github.com/ansible/ansible/issues/25543
 - name: Install dbus for the hostname module
-  apt:
+  package:
     name: dbus
     state: present
   become: true

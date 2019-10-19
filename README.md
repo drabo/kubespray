@@ -212,8 +212,8 @@ cluster_name: cluster.local
 This subnets *must be unused* in your network.
 
 ```yaml
-kube_service_addresses: 10.233.0.0/18
-kube_pods_subnet: 10.233.64.0/18
+kube_service_addresses: 100.64.0.0/18
+kube_pods_subnet: 100.64.64.0/18
 ```
 
 ## Create cluster
@@ -272,6 +272,38 @@ Edit the DaemonSet `ingress-nginx-controller` and add the following argument to 
 
 This option will help to display for each ingress the IP address of the endpoint.
 
+### Remove proxy
+
+If you specified the http_proxy and https_proxy but you want to modify, you need to:
+
+- login to each cluster node, either master or worker node
+- edit the file `/etc/systemd/system/docker.service.d/http-proxy.conf`
+- restart docker service
+
+If you want to remove the proxy configuration then you should delete the above mentioned file on each cluster node.
+
+## Cluster operations
+
+### Adding nodes
+
+If new nodes are needed in the cluster then you should create them with same OS as the existin cluster nodes. It would be wise to have the same OS on all cluster nodes.
+
+Update the inventory file `inventory/mycluster/inventory.ini` and include the new node in all relevant groups: all, kube-master, etcd, kube-node.
+
+Ensure that you have connectivity to new cluster nodes for Ansible and run:
+
+```shell
+ansible-playbook -i inventory/mycluster/inventory.ini scale.yml
+```
+
+### Remove nodes
+
+Update the inventory file `inventory/mycluster/inventory.ini` and comment or delete the nodes from all relevant groups: all, kube-master, etcd, kube-node.
+
+```shell
+ansible-playbook -i inventory/mycluster/inventory.ini remove-node.yml -e "node=nodeX,nodeY"
+```
+
 ## Troubleshooting
 
 ### Installation stuck during container image download
@@ -283,13 +315,3 @@ If you connect with vagrant user then apply the following, otherwise change the 
 ```shell
 sudo usermod -aG docker vagrant
 ```
-
-### Remove proxy
-
-If you specified the http_proxy and https_proxy but you want to modify, you need to:
-
-- login to each cluster node, either master or worker node
-- edit the file `/etc/systemd/system/docker.service.d/http-proxy.conf`
-- restart docker service
-
-If you want to remove the proxy configuration then you should delete the above mentioned file on each cluster node.
