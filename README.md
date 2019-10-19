@@ -195,7 +195,7 @@ You may choose between several plugins like: calico, flannel and few other. The 
 kube_network_plugin: calico
 ```
 
-According to the network plugin chosenyou may want to update specific parameters in the corresponding config file.
+According to the network plugin chosen, you may want to update specific parameters in the corresponding config file. The default works fine.
 
 For `calico` you need to modify the file `inventory/mycluster/group_vars/k8s-cluster/k8s-net-calico.yml`
 
@@ -279,8 +279,9 @@ If you specified the http_proxy and https_proxy but you want to modify, you need
 - login to each cluster node, either master or worker node
 - edit the file `/etc/systemd/system/docker.service.d/http-proxy.conf`
 - restart docker service
+- edit the file `/etc/apt/apt.conf`
 
-If you want to remove the proxy configuration then you should delete the above mentioned file on each cluster node.
+If you want to remove the proxy configuration then you should delete the above mentioned files on each cluster node.
 
 ## Cluster operations
 
@@ -298,11 +299,15 @@ ansible-playbook -i inventory/mycluster/inventory.ini scale.yml
 
 ### Remove nodes
 
-Update the inventory file `inventory/mycluster/inventory.ini` and comment or delete the nodes from all relevant groups: all, kube-master, etcd, kube-node.
+In order to remove `nodeX` and `nodeY` from the cluster run:
 
 ```shell
 ansible-playbook -i inventory/mycluster/inventory.ini remove-node.yml -e "node=nodeX,nodeY"
 ```
+
+If a node is not reachable by ssh, add `-e "reset_nodes=no"`.
+
+You may need to update the inventory file `inventory/mycluster/inventory.ini` and comment or delete the removed nodes from all relevant groups: all, kube-master, etcd, kube-node.
 
 ## Troubleshooting
 
@@ -314,4 +319,12 @@ If you connect with vagrant user then apply the following, otherwise change the 
 
 ```shell
 sudo usermod -aG docker vagrant
+```
+
+### How to get the token for dashboard
+
+Identify the secret `kubernetes-dashboard-token` and get the value that will be used in browser:
+
+```shell
+kubectl -n kube-system describe secrets $(kubectl -n kube-system get secrets|grep kubernetes-dashboard-token|awk '{print $1}')|grep ^token:|awk '{print $2}'
 ```
