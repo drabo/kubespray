@@ -309,6 +309,14 @@ If a node is not reachable by ssh, add `-e "reset_nodes=no"`.
 
 You may need to update the inventory file `inventory/mycluster/inventory.ini` and comment or delete the removed nodes from all relevant groups: all, kube-master, etcd, kube-node.
 
+### Upgrade cluster
+
+```shell
+ansible-playbook -i inventory/mycluster/inventory.ini upgrade-cluster.yml -e kube_version=v1.6.0
+```
+
+Additional information [here](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/upgrades.md).
+
 ## Troubleshooting
 
 ### Installation stuck during container image download
