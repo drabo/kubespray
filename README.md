@@ -336,3 +336,63 @@ Identify the secret `kubernetes-dashboard-token` and get the value that will be 
 ```shell
 kubectl -n kube-system describe secrets $(kubectl -n kube-system get secrets|grep kubernetes-dashboard-token|awk '{print $1}')|grep ^token:|awk '{print $2}'
 ```
+
+### How to secure the cluster with Iptables
+
+We assume that you need to isolate the cluster and to allow access only for administration purpose and to the exposed services.
+
+#### Iptables installation
+
+Installation in our case for _Ubuntu 16.04_:
+
+```shell
+apt install iptables-persistent
+```
+
+#### Iptables configuration
+
+After the installation you must create the Iptables config file.
+
+For _Ubuntu 16.04_ the config file is `/etc/iptables/rules.v4`:
+
+```shell
+cat >/etc/iptables/rules.v4 <<EOF
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -p icmp -j ACCEPT
+-A INPUT -s 100.64.0.0/17 -p tcp -j ACCEPT
+-A INPUT -s 100.64.0.0/17 -p udp -j ACCEPT
+-A INPUT -s 192.168.10.0/24 -p tcp -j ACCEPT
+-A INPUT -s 192.168.10.0/24 -p udp -j ACCEPT
+-A INPUT -m state --state NEW -p tcp --dport 22 -j ACCEPT
+-A INPUT -j REJECT --reject-with icmp-host-prohibited
+-A FORWARD -j REJECT --reject-with icmp-host-prohibited
+COMMIT
+EOF
+
+chmod 600 /etc/iptables/rules.v4
+ln -s /etc/iptables/rules.v4 /etc/network/iptables.up.rules
+```
+
+The CIDR's allowed in the firewall of each K8s cluster server are:
+
+- 100.64.0.0/17 - the subnet including `kube_service_addresses` and `kube_pods_subnet` defined above
+- 192.168.10.0/24 - the subnet used in Vagrant to create the cluster nodes
+
+#### Iptables start
+
+For _Ubuntu 16.04_ the Iptables starts with:
+
+```shell
+iptables-apply
+```
+
+The above procedure to install and configure Iptables must be applied to all K8s cluster nodes.
+
+After the Iptables was configured and started on all K8s nodes, all nodes should be rebooted.
+
+In this way the cluster will be restarted with the new firewall rules included in the ones that are applied by Kubernetes.
