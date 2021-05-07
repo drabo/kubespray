@@ -173,6 +173,7 @@ In order to make available the services deployed in your Kubespray cluster you n
 
 ```yaml
 ingress_nginx_enabled: true
+ingress_nginx_host_network: true
 ```
 
 #### Enable Metrics Server
